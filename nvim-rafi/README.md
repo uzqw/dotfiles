@@ -30,7 +30,8 @@ cd ~/.config/nvim && make install     # 建目录 + 首次同步插件
 260726
 主要改动 ：
 - neo-tree 的显示问题的配置（包括不能固定住不能左右移动）
-- <S-a-c> 拷贝文件路径/代码范围（喂给ai-agent）</S-a-c>
+- 拷贝文件路径/代码范围（喂给ai-agent）
+  - 快捷键 space + a + c
 - go ts lsp 配置与outline
 - neo-tree 的快捷键
   - E 展开当前文件夹全部子文件夹
