@@ -129,11 +129,17 @@ return {
 
 			return {
 				enhanced_diff_hl = true, -- See ':h diffview-config-enhanced_diff_hl'
+				hooks = {
+					diff_buf_win_enter = function()
+						vim.opt_local.wrap = true
+						vim.opt_local.linebreak = true
+					end,
+				},
 				keymaps = {
 					view = {
 						{ 'n', 'q', actions.close },
-						{ 'n', '<Tab>', actions.select_next_entry },
-						{ 'n', '<S-Tab>', actions.select_prev_entry },
+						{ 'n', '<tab>', '<cmd>normal! ]c<CR>' },
+						{ 'n', '<s-tab>', '<cmd>normal! [c<CR>' },
 						{ 'n', '<localleader>a', actions.focus_files },
 						{ 'n', '<localleader>e', actions.toggle_files },
 					},
