@@ -29,7 +29,15 @@ return {
 						{ '<leader>ciwl', '<cmd>lua =vim.lsp.buf.list_workspace_folders()<CR>', desc = 'List Workspace Folders' },
 					},
 				},
-				gopls = {},
+				gopls = {
+					-- gopls only accepts file:// documents; Diffview revisions use diffview://.
+					root_dir = function(bufnr, on_dir)
+						local name = vim.api.nvim_buf_get_name(bufnr)
+						if not vim.startswith(name, 'diffview://') then
+							on_dir(vim.fs.root(name, { 'go.work', 'go.mod', '.git' }))
+						end
+					end,
+				},
 				-- HTML/CSS (no LazyVim extra). Python/TS come from enabled extras.
 				html = {
 					filetypes = { 'html', 'templ' },
