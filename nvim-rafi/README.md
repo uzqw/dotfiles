@@ -26,6 +26,34 @@ git clone <你的fork> ~/.config/nvim   # 或解包
 cd ~/.config/nvim && make install     # 建目录 + 首次同步插件
 ```
 
+## ActivityWatch
+
+`bundle/aw-watcher-vim` 已直接收录在仓库中，由 lazy.nvim 加载，不需要单独克隆。
+默认连接 `127.0.0.1:5600`；WSL 或远程服务复制配置模板后修改：
+
+```bash
+cp .env.example .env
+```
+
+```dotenv
+AW_APIURL_HOST=192.168.3.194
+AW_APIURL_PORT=5600
+```
+
+`.env` 是每台机器的本地配置，已被 Git 忽略；`.env.example` 会提交到仓库。
+
+WSL 访问 Windows 上的 ActivityWatch 时，还要修改 Windows 的
+`%LOCALAPPDATA%\\activitywatch\\activitywatch\\aw-server\\aw-server.toml`：
+
+```toml
+[server]
+host = "0.0.0.0"
+```
+
+修改后重启 ActivityWatch。该设置会监听所有网卡，请用 Windows 防火墙限制 5600 端口；
+普通 Linux/macOS 本机使用时无需设置环境变量，也无需修改服务端监听地址。
+在 Neovim 中用 `:AWStatus` 检查，`1` 表示已连接。
+
 # Updates
 260726
 主要改动 ：
