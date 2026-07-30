@@ -20,6 +20,17 @@ vim.g.autoformat = false -- LazyVim auto format
 
 local opt = vim.opt
 
+-- In Zellij web there is no X11/Wayland clipboard; use the terminal's OSC 52.
+if vim.env.ZELLIJ then
+	local osc52 = require('vim.ui.clipboard.osc52')
+	vim.g.clipboard = {
+		name = 'OSC 52',
+		copy = { ['+'] = osc52.copy('+'), ['*'] = osc52.copy('*') },
+		paste = { ['+'] = osc52.paste('+'), ['*'] = osc52.paste('*') },
+	}
+end
+opt.clipboard = 'unnamedplus'
+
 opt.autowrite = false
 opt.expandtab = false
 -- Hybrid line numbers: cursor line = absolute, other lines = relative.
