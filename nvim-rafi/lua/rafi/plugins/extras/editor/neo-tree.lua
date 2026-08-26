@@ -582,6 +582,9 @@ return {
 				bind_to_cwd = false,
 				follow_current_file = { enabled = false },
 				find_by_full_path_words = true,
+				-- Fix: first file open after `nvim .` shows blank/flashes (neo-tree issue #1181/#1699)
+				-- https://github.com/nvim-neo-tree/neo-tree.nvim/issues/1181
+				hijack_netrw_behavior = 'disabled',
 				-- group_empty_dirs breaks expand_all_nodes (Z) via nui get_id nil.
 				group_empty_dirs = false,
 				use_libuv_file_watcher = has_git,
