@@ -67,6 +67,10 @@ local function save_neo_tree_session_state()
 				local ok, state = pcall(manager.get_state, 'filesystem', tab)
 				if ok and state and state.path then
 					item.path = state.path
+					if state.tree then
+						item.expanded_nodes =
+							require('neo-tree.ui.renderer').get_expanded_nodes(state.tree)
+					end
 				end
 			end
 		end
@@ -112,6 +116,12 @@ local function restore_neo_tree_session_state()
 						return
 					end
 					vim.api.nvim_set_current_tabpage(tab)
+					if type(item.expanded_nodes) == 'table' then
+						require('neo-tree.sources.manager').get_state(
+							'filesystem',
+							tab
+						).force_open_folders = vim.deepcopy(item.expanded_nodes)
+					end
 					command.execute({
 						action = 'show',
 						source = 'filesystem',
