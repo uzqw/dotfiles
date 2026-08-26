@@ -132,10 +132,13 @@ return {
 					if not opts.autoload then
 						return
 					end
+					local started_with_file = vim.iter(vim.fn.argv()):any(function(path)
+						return vim.fn.isdirectory(path) == 0
+					end)
 					local cwd = vim.uv.cwd() or vim.fn.getcwd()
 					if
 						cwd == nil
-						or vim.fn.argc() > 0
+						or started_with_file
 						or vim.g.started_with_stdin
 						or vim.env.GIT_EXEC_PATH ~= nil
 					then
