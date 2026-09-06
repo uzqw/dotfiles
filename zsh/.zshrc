@@ -127,8 +127,7 @@ bindkey '^[[4~' end-of-line
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-export ANTHROPIC_BASE_URL="https://api.gostapi.com"
-export ANTHROPIC_AUTH_TOKEN="ANTHROPIC_AUTH_TOKEN_REMOVED"
+# ANTHROPIC_BASE_URL / ANTHROPIC_AUTH_TOKEN 已移至 ~/.env（由 .zshenv 加载，不入库）
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export CLAUDE_CODE_ATTRIBUTION_HEADER=0
 
