@@ -10,5 +10,16 @@ tmux/
 kopia/
 zsh/
 alacritty/
+sync.sh
 ```
+
+## 一键同步
+
+```sh
+./sync.sh
+```
+
+- 以符号链接方式把 `zsh/`、`tmux/` 下的配置同步到 `$HOME`
+- 仓库是唯一真源，改仓库里的配置即同步到本机
+- `~/.env` 为机器专属密钥文件，脚本不会触碰，请自行维护（参考 `zsh/.env.example`）
 
