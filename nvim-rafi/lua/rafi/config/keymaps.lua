@@ -354,7 +354,15 @@ if vim.fn.executable('lazygit') == 1 then
 	map('n', '<leader>gT', function() Snacks.lazygit() end, { desc = 'Lazygit (cwd)' })
 end
 
-map('n', '<leader>gm', function() Snacks.picker.git_log_line() end, { desc = 'Git Blame Line' })
+-- LazyVim binds <leader>gb to this picker; keep it on gm, blame.nvim owns gb.
+map('n', '<leader>gm', function() Snacks.picker.git_log_line() end, { desc = 'Git Log Line' })
+map('n', '<leader>gb', function()
+	require('rafi.util.blame').toggle()
+end, { desc = 'Git blame', silent = true, nowait = true })
+map('n', '<leader>gB', function()
+	require('rafi.util.blame').load()
+	vim.cmd('BlameToggle window')
+end, { desc = 'Git blame (window)', silent = true, nowait = true })
 map({ 'n', 'x' }, '<leader>go', function() Snacks.gitbrowse() end, { desc = 'Git Browse (open)' })
 
 -- Terminal Mappings
