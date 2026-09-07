@@ -118,12 +118,26 @@ return {
 		},
 		opts = function()
 			local actions = require('diffview.actions')
+			local group = vim.api.nvim_create_augroup('rafi.diffview', {})
 			vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
-				group = vim.api.nvim_create_augroup('rafi.diffview', {}),
+				group = group,
 				pattern = 'diffview:///panels/*',
 				callback = function()
 					vim.opt_local.cursorline = true
 					vim.opt_local.winhighlight = 'CursorLine:WildMenu'
+				end,
+			})
+			-- Null leftovers after an external commit lose buffer-local `q`.
+			vim.api.nvim_create_autocmd('BufWinEnter', {
+				group = group,
+				pattern = 'diffview://*',
+				callback = function(ev)
+					vim.keymap.set('n', 'q', '<cmd>DiffviewClose<CR>', {
+						buffer = ev.buf,
+						silent = true,
+						nowait = true,
+						desc = 'Close Diffview',
+					})
 				end,
 			})
 
@@ -134,17 +148,36 @@ return {
 						vim.opt_local.wrap = true
 						vim.opt_local.linebreak = true
 					end,
+					-- Committing elsewhere empties the list and leaves 3 dead windows.
+					view_opened = function(view)
+						if not view.class or view.class.__name ~= 'DiffView' then
+							return
+						end
+						view.emitter:on('files_updated', function(_, files)
+							if files and files:len() > 0 then
+								return
+							end
+							vim.schedule(function()
+								if view.closing:check() then
+									return
+								end
+								pcall(function()
+									view:close()
+								end)
+							end)
+						end)
+					end,
 				},
 				keymaps = {
 					view = {
-						{ 'n', 'q', actions.close },
+						{ 'n', 'q', '<cmd>DiffviewClose<CR>' },
 						{ 'n', '<tab>', '<cmd>normal! ]c<CR>' },
 						{ 'n', '<s-tab>', '<cmd>normal! [c<CR>' },
 						{ 'n', '<localleader>a', actions.focus_files },
 						{ 'n', '<localleader>e', actions.toggle_files },
 					},
 					file_panel = {
-						{ 'n', 'q', actions.close },
+						{ 'n', 'q', '<cmd>DiffviewClose<CR>' },
 						{ 'n', 'h', actions.prev_entry },
 						{ 'n', 'o', actions.focus_entry },
 						{ 'n', 'gf', actions.goto_file },
