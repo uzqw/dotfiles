@@ -10,6 +10,22 @@ local function neo_tree_session_state_file()
 	return neo_tree_session_state_dir .. cwd:gsub('[\\/:]+', '%%') .. '.json'
 end
 
+-- Session used to persist neo-tree path=$HOME (html LSP root). `nvim .` must
+-- stay in the launch directory, not restore a parent of cwd.
+local function dir_in_cwd(path)
+	local cwd = vim.fs.normalize(vim.uv.cwd() or vim.fn.getcwd() or '')
+	if cwd == '' then
+		return path
+	end
+	if type(path) == 'string' and path ~= '' then
+		path = vim.fs.normalize(path)
+		if path == cwd or vim.startswith(path, cwd .. '/') then
+			return path
+		end
+	end
+	return cwd
+end
+
 local function read_neo_tree_width()
 	local ok, lines = pcall(vim.fn.readfile, neo_tree_width_file)
 	local width = ok and tonumber(lines[1]) or nil
@@ -116,17 +132,25 @@ local function restore_neo_tree_session_state()
 						return
 					end
 					vim.api.nvim_set_current_tabpage(tab)
+					local dir = dir_in_cwd(item.path)
 					if type(item.expanded_nodes) == 'table' then
+						local folders = {}
+						for _, p in ipairs(item.expanded_nodes) do
+							p = type(p) == 'string' and vim.fs.normalize(p) or ''
+							if p == dir or vim.startswith(p, dir .. '/') then
+								folders[#folders + 1] = p
+							end
+						end
 						require('neo-tree.sources.manager').get_state(
 							'filesystem',
 							tab
-						).force_open_folders = vim.deepcopy(item.expanded_nodes)
+						).force_open_folders = folders
 					end
 					command.execute({
 						action = 'show',
 						source = 'filesystem',
 						position = 'left',
-						dir = item.path or ((_G.LazyVim and LazyVim.root()) or vim.uv.cwd()),
+						dir = dir,
 					})
 					vim.defer_fn(function()
 						local win = find_filesystem_neo_tree_win(tab)

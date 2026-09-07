@@ -350,7 +350,7 @@ map('x', '<leader>64d', function() base64(false) end, { desc = 'Base64 Decode' }
 -- Lazygit
 if vim.fn.executable('lazygit') == 1 then
 	---@diagnostic disable-next-line: missing-fields
-	map('n', '<leader>gt', function() Snacks.lazygit( { cwd = LazyVim.root.git() }) end, { desc = 'Lazygit (Root Dir)' })
+	map('n', '<leader>gt', function() Snacks.lazygit({ cwd = Snacks.git.get_root() }) end, { desc = 'Lazygit (Git Root)' })
 	map('n', '<leader>gT', function() Snacks.lazygit() end, { desc = 'Lazygit (cwd)' })
 end
 
