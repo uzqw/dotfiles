@@ -17,6 +17,8 @@ vim.g.diffprg = 'bcompare'
 
 -- Disable LazyVim features.
 vim.g.autoformat = false -- LazyVim auto format
+-- html LSP 会把 root 认成 $HOME；nvim . 应对准当前 git/cwd。
+vim.g.root_spec = { { '.git', 'lua' }, 'cwd' }
 
 local opt = vim.opt
 
