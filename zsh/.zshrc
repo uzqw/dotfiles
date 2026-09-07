@@ -238,10 +238,10 @@ export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 
-# pyenv
+# pyenv（未安装时跳过）
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
+command -v pyenv >/dev/null && eval "$(pyenv init --path)"
 
 # Rust China Mirror (USTC)
 export RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static"
