@@ -18,6 +18,7 @@ ln -sf "$DOTFILES/tmux/.tmux.conf" "$HOME/.tmux.conf"
 echo "==> 同步 nvim 配置"
 mkdir -p "$HOME/.config"
 ln -sfn "$DOTFILES/nvim-rafi" "$HOME/.config/nvim-rafi"
+ln -sfn "$DOTFILES/nvim-rafi" "$HOME/.config/nvim"
 
 echo "==> 完成"
 echo "提示: ~/.env 与 nvim-rafi/.env 为机器专属密钥文件，未同步，请自行维护。"
