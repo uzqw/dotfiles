@@ -193,14 +193,29 @@ return {
 	{
 		'FabijanZulj/blame.nvim',
 		cond = has_git,
-		cmd = 'ToggleBlame',
-		-- stylua: ignore
-		keys = {
-			{ '<leader>gb', '<cmd>BlameToggle virtual<CR>', desc = 'Git blame' },
-			{ '<leader>gB', '<cmd>BlameToggle window<CR>', desc = 'Git blame (window)' },
-		},
+		cmd = 'BlameToggle',
+		event = 'VeryLazy',
+		init = function()
+			local blame = require('rafi.util.blame')
+			blame.map()
+			vim.api.nvim_create_autocmd('User', {
+				pattern = 'VeryLazy',
+				callback = function()
+					vim.schedule(blame.map)
+				end,
+			})
+			vim.api.nvim_create_autocmd('BufEnter', {
+				group = vim.api.nvim_create_augroup('rafi.blame_follow', {
+					clear = true,
+				}),
+				callback = function(ev)
+					blame.on_buf(ev.buf)
+				end,
+			})
+		end,
 		opts = {
 			date_format = '%Y-%m-%d %H:%M',
+			virtual_style = 'right_align',
 			merge_consecutive = false,
 			max_summary_width = 30,
 			mappings = {
