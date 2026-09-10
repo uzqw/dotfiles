@@ -193,6 +193,32 @@ local function folder_node(state)
 	return parent_id and state.tree:get_node(parent_id) or nil
 end
 
+---Walk nested files (foo_test.go under foo.go) under node.
+---expand_all skips these: nested files have loaded=nil, so the filesystem
+---prefetcher treats them as unloaded dirs and never expands them.
+---@param state table
+---@param node table
+---@param expand boolean
+local function walk_file_nests(state, node, expand)
+	if not node then
+		return
+	end
+	if node.type ~= 'directory' and node:has_children() then
+		if expand then
+			if not node:is_expanded() then
+				node:expand()
+			end
+		elseif node:is_expanded() then
+			node:collapse()
+		end
+		state.explicitly_opened_nodes = state.explicitly_opened_nodes or {}
+		state.explicitly_opened_nodes[node:get_id()] = expand or nil
+	end
+	for _, child in ipairs(state.tree:get_nodes(node:get_id()) or {}) do
+		walk_file_nests(state, child, expand)
+	end
+end
+
 ---Persist view state before neo-tree deletes its window and buffer.
 ---@param args table
 local function preserve_neo_tree_state(args)
@@ -517,26 +543,37 @@ return {
 						if not node then
 							return
 						end
-						state.commands.expand_all_subnodes(state, node)
-						require('neo-tree.ui.renderer').focus_node(state, node:get_id())
+						local renderer = require('neo-tree.ui.renderer')
+						local expander = require('neo-tree.sources.common.node_expander')
+						local fs = require('neo-tree.sources.filesystem')
+						local id = node:get_id()
+						renderer.position.set(state, nil)
+						require('plenary.async').run(function()
+							expander.expand_directory_recursively(
+								state,
+								node,
+								fs.prefetcher
+							)
+						end, function()
+							local n = state.tree and state.tree:get_node(id)
+							if n then
+								walk_file_nests(state, n, true)
+							end
+							renderer.redraw(state)
+							renderer.focus_node(state, id)
+						end)
 					end,
 					['W'] = function(state)
-						local renderer = require('neo-tree.ui.renderer')
-						local tree = state.tree
-						local node = tree:get_node()
+						local node = folder_node(state)
 						if not node then
 							return
 						end
-						local target = node
-						if node.type ~= 'directory' or not node:is_expanded() then
-							local parent_id = node:get_parent_id()
-							if parent_id then
-								target = tree:get_node(parent_id) or node
-							end
-						end
-						renderer.collapse_all_nodes(tree, target:get_id())
+						local renderer = require('neo-tree.ui.renderer')
+						local id = node:get_id()
+						walk_file_nests(state, node, false)
+						renderer.collapse_all_nodes(state.tree, id)
 						renderer.redraw(state)
-						renderer.focus_node(state, target:get_id())
+						renderer.focus_node(state, id)
 					end,
 					['<C-r>'] = 'refresh',
 

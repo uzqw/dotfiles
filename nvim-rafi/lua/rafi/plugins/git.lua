@@ -140,6 +140,24 @@ return {
 					})
 				end,
 			})
+			-- :qa with Diffview open would mksession the 3-way layout.
+			local function close_all_diffviews()
+				local ok, lib = pcall(require, 'diffview.lib')
+				if not ok then
+					return
+				end
+				for _, view in ipairs(vim.list_extend({}, lib.views)) do
+					pcall(function()
+						view:close()
+						lib.dispose_view(view)
+					end)
+				end
+			end
+			vim.api.nvim_create_autocmd('User', {
+				group = group,
+				pattern = 'PersistenceSavePre',
+				callback = close_all_diffviews,
+			})
 
 			return {
 				enhanced_diff_hl = true, -- See ':h diffview-config-enhanced_diff_hl'

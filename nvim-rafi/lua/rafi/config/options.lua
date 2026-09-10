@@ -22,13 +22,40 @@ vim.g.root_spec = { { '.git', 'lua' }, 'cwd' }
 
 local opt = vim.opt
 
--- In Zellij web there is no X11/Wayland clipboard; use the terminal's OSC 52.
-if vim.env.ZELLIJ then
+-- WSL: xclip uses WSLg X11, which stops syncing to Windows after WSL upgrades.
+-- clip.exe still writes the Windows clipboard. Paste is cached (last yank);
+-- use the terminal paste for text copied outside nvim.
+if vim.fn.has('wsl') == 1 then
+	local clip = vim.fn.executable('clip.exe') == 1 and 'clip.exe'
+		or '/mnt/c/Windows/System32/clip.exe'
+	local cache = { {} }
+	vim.g.clipboard = {
+		name = 'WslClipboard',
+		copy = {
+			['+'] = function(lines)
+				cache[1] = lines
+				vim.fn.system({ clip }, table.concat(lines, '\n'))
+			end,
+			['*'] = function(lines)
+				cache[1] = lines
+				vim.fn.system({ clip }, table.concat(lines, '\n'))
+			end,
+		},
+		paste = {
+			['+'] = function() return cache[1] end,
+			['*'] = function() return cache[1] end,
+		},
+	}
+elseif vim.env.ZELLIJ then
+	-- Copy-only: OSC 52 paste waits for a reply Zellij web never sends.
 	local osc52 = require('vim.ui.clipboard.osc52')
 	vim.g.clipboard = {
 		name = 'OSC 52',
 		copy = { ['+'] = osc52.copy('+'), ['*'] = osc52.copy('*') },
-		paste = { ['+'] = osc52.paste('+'), ['*'] = osc52.paste('*') },
+		paste = {
+			['+'] = function() return { '' } end,
+			['*'] = function() return { '' } end,
+		},
 	}
 end
 opt.clipboard = 'unnamedplus'
