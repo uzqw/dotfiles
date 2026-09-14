@@ -5,6 +5,7 @@
 #   - 仓库是唯一真源，改仓库里的配置即同步到本机
 #   - 目标已存在且不是符号链接时会拒绝执行，避免静默覆盖本机配置
 #   - ~/.env 与 nvim-rafi/.env 为机器专属密钥文件，脚本不会触碰，请自行维护
+#   - 机器专属文件（密钥、别名）统一放仓库根，不入库：.env / .zshrc.local
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
@@ -34,5 +35,8 @@ link "$DOTFILES/nvim-rafi" "$HOME/.config/nvim-rafi"
 link "$DOTFILES/nvim-rafi" "$HOME/.config/nvim"
 
 echo "==> 完成"
-echo "提示: ~/.env 与 nvim-rafi/.env 为机器专属密钥文件，未同步，请自行维护。"
-echo "提示: 主机别名、SSH 隧道等按机器不同的配置放 ~/.zshrc.local，不入库。"
+echo "提示: 机器本地文件放仓库根（已 gitignore）："
+echo "      $DOTFILES/.env          密钥/变量，模板 .env.example"
+echo "      $DOTFILES/.zshrc.local  主机别名、SSH 隧道等"
+[ -f "$DOTFILES/.env" ] || echo "提示: 缺 .env，先 cp .env.example .env 并填值"
+echo "提示: nvim-rafi/.env 为 ActivityWatch 机器配置，同理自行维护。"
