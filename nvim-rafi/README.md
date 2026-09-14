@@ -36,7 +36,7 @@ cp .env.example .env
 ```
 
 ```dotenv
-AW_APIURL_HOST=192.168.3.194
+AW_APIURL_HOST=your-host-ip
 AW_APIURL_PORT=5600
 ```
 

@@ -131,11 +131,11 @@ bindkey '^[[4~' end-of-line
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export CLAUDE_CODE_ATTRIBUTION_HEADER=0
 
-export PATH=$PATH:~/go/bin:/usr/local/go/bin
+# Go（未安装时跳过）
+[ -d "$HOME/go/bin" ] && path=("$HOME/go/bin" $path)
+[ -d /usr/local/go/bin ] && path=(/usr/local/go/bin $path)
 
 # >>> Moved from .bashrc <<<
-# xhost
-xhost +local:root > /dev/null 2>&1
 
 # Functions
 colorchart() {
@@ -172,13 +172,6 @@ cdf() {
   [ -n "$dir" ] && cd "$dir"
 }
 
-cdw() {
-  local dir
-  # fd 后面接搜索路径，-t d 表示只找文件夹
-  dir=$(fd -t d . ~/wp | fzf)
-  [ -n "$dir" ] && cd "$dir"
-}
-
 # cargo
 . "$HOME/.cargo/env"
 
@@ -195,43 +188,17 @@ yarn() { unset -f node npm npx yarn pnpm pnpx pi; load_nvm; "$0" "$@"; }
 pnpm() { unset -f node npm npx yarn pnpm pnpx pi; load_nvm; "$0" "$@"; }
 pnpx() { unset -f node npm npx yarn pnpm pnpx pi; load_nvm; "$0" "$@"; }
 pi()   { unset -f node npm npx yarn pnpm pnpx pi; load_nvm; "$0" "$@"; }
-maka() { unset -f node npm npx yarn pnpm pnpx pi 2>/dev/null; load_nvm; node "$HOME/wp/maka-agent/packages/cli/dist/cli.js" "$@"; }
-omaka() { unset -f node npm npx yarn pnpm pnpx pi 2>/dev/null; load_nvm; node "$HOME/wp/github/maka-agent-git/packages/cli/dist/cli.js" "$@"; }
-_makas() { unset -f node npm npx yarn pnpm pnpx pi 2>/dev/null; load_nvm; local root="$1"; shift; local sb=$(mktemp -d); mkdir -p "$sb/config/Maka/workspaces/default"; cp "$HOME/.config/Maka/workspaces/default/"{connection-catalog.json,credential-vault.json} "$sb/config/Maka/workspaces/default/" 2>/dev/null; cd "$sb" && XDG_CONFIG_HOME="$sb/config" node "$root/packages/cli/dist/cli.js" "$@"; }
-makas() { _makas "$HOME/wp/maka-agent" "$@"; }
-omakas() { _makas "$HOME/wp/github/maka-agent-git" "$@"; }
-makab() { ~/wp/maka-lab/iso.sh build dev; }
-omakab() { ~/wp/maka-lab/iso.sh build official; }
-makaup() {
-  local root="$HOME/wp/maka-agent"
-  cd "$root" || return 1
-  npm run build || return 1
-  echo "✅ maka-agent 当前工作区已编译"
-}
-omakaup() { unset -f node npm npx yarn pnpm pnpx pi 2>/dev/null; load_nvm; ~/wp/maka-lab/iso.sh refresh-official; }
-
 # Aliases
 alias vi="vim"
 alias ls='ls --color=auto'
 alias grep='grep --colour=auto'
 alias egrep='egrep --colour=auto'
 alias fgrep='fgrep --colour=auto'
-alias hk-bronco-pg="autossh -M 0 -o ServerAliveInterval=30 -o ServerAliveCountMax=5  -f -N -L 0.0.0.0:5432:127.0.0.1:5432 hk-bronco"
-alias sg-bronco-pg="autossh -M 0 -o ServerAliveInterval=30 -o ServerAliveCountMax=5  -f -N -L 0.0.0.0:5433:127.0.0.1:5432 sg-bronco"
-alias hk-bronco-nats="autossh -M 0 -o ServerAliveInterval=30 -o ServerAliveCountMax=5  -f -N -L 4222:127.0.0.1:4222 hk-bronco"
-alias hk-bronco-futu="autossh -M 0 -o ServerAliveInterval=30 -o ServerAliveCountMax=5  -f -N -L 11111:127.0.0.1:11111 hk-bronco"
-alias hk-bronco-ssh="ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=5 hk-bronco -t 'tmux attach'"
-alias hk-ucloud-ssh="ssh hk-ucloud -t tmux attach"
-alias sg-ucloud-ssh="ssh sg-ucloud -t tmux attach"
-alias envmitm="export NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem&&export HTTP_PROXY=http://127.0.0.1:8080 && export HTTPS_PROXY=http://127.0.0.1:8080"
-alias w37=' wakeonlan 58:11:22:B8:02:EB'
-alias cdnotes='cd /home/uzqw/wp/logseq-git/logseq/marktext'
 alias rafi='NVIM_APPNAME=nvim-rafi nvim'
 alias ni='ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ npm install --registry=https://registry.npmmirror.com --foreground-scripts'
 
 # PATH
 export PATH="$HOME/.local/bin:$PATH"
-export PATH=/opt/postgresql15/bin:$PATH
 
 # Input method
 export GTK_IM_MODULE=fcitx
@@ -247,12 +214,12 @@ command -v pyenv >/dev/null && eval "$(pyenv init --path)"
 export RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static"
 export RUSTUP_UPDATE_ROOT="https://mirrors.ustc.edu.cn/rust-static/rustup"
 
-# opencode
-export PATH=/home/uzqw/.opencode/bin:$PATH
+# opencode（未安装时跳过）
+[ -d "$HOME/.opencode/bin" ] && path=("$HOME/.opencode/bin" $path)
 
-# gvm (lazy load)
+# gvm (lazy load, 未安装时静默)
 load_gvm() {
-  [[ -s "/home/uzqw/.gvm/scripts/gvm" ]] && source "/home/uzqw/.gvm/scripts/gvm"
+  [[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
 }
 gvm() { unset -f gvm go gofmt; load_gvm; "$0" "$@"; }
 go()  { unset -f gvm go gofmt; load_gvm; "$0" "$@"; }
@@ -265,3 +232,6 @@ export PATH="$HOME/.grok/bin:$PATH"
 
 # UTips environment
 [ -f "$HOME/.config/utips/env" ] && . "$HOME/.config/utips/env"
+
+# 机器本地配置（主机别名、隧道、专有项目路径等），不入库
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
