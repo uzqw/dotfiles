@@ -1,3 +1,7 @@
+# Ubuntu's /etc/zsh/zshrc runs compinit by default; Oh My Zsh runs its own
+# cached compinit later, so skip the duplicate global initialization.
+skip_global_compinit=1
+
 # 仓库根目录：由本文件真实路径推导（sync.sh 把 ~/.zshenv 链到 $DOTFILES/zsh/.zshenv）
 # ${(%):-%x} = 本文件路径，:A 解析符号链接，:h:h 上两级
 DOTFILES="${${(%):-%x}:A:h:h}"

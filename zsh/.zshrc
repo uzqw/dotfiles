@@ -4,6 +4,9 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# Keep PATH entries unique while preserving the first occurrence.
+typeset -U path PATH
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -47,6 +50,8 @@ fi
 
 # Uncomment the following line to disable auto-setting terminal title.
 # DISABLE_AUTO_TITLE="true"
+# tmux 内禁用 auto title，避免覆盖 pane 命名
+[[ -n $TMUX ]] && DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -78,9 +83,14 @@ fi
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-history-substring-search)
+plugins=(git zsh-autosuggestions history-substring-search)
+
+# Skip periodic update checks and untracked-file scans at startup.
+zstyle ':omz:update' mode disabled
+DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 source $ZSH/oh-my-zsh.sh
+[ -f /etc/zsh_command_not_found ] && source /etc/zsh_command_not_found
 
 # history-substring-search key bindings
 bindkey '^[[A' history-substring-search-up
@@ -134,6 +144,7 @@ export CLAUDE_CODE_ATTRIBUTION_HEADER=0
 # Go（未安装时跳过）
 [ -d "$HOME/go/bin" ] && path=("$HOME/go/bin" $path)
 [ -d /usr/local/go/bin ] && path=(/usr/local/go/bin $path)
+export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 
 # >>> Moved from .bashrc <<<
 
