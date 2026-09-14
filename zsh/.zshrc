@@ -244,5 +244,5 @@ export PATH="$HOME/.grok/bin:$PATH"
 # UTips environment
 [ -f "$HOME/.config/utips/env" ] && . "$HOME/.config/utips/env"
 
-# 机器本地配置（主机别名、隧道、专有项目路径等），不入库
-[ -f "$DOTFILES/.zshrc.local" ] && source "$DOTFILES/.zshrc.local"
+# 机器本地配置（主机别名、专有项目路径等），模板见仓库里的 .zshrc.local.example
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

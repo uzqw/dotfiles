@@ -1,0 +1,19 @@
+# 本机专属 shell 配置模板：复制为 ~/.zshrc.local
+#
+# 由 zsh/.zshrc 末尾自动加载。仓库只放跨机器通用的东西，这里放只有本机才成立的
+# 别名、函数、PATH、项目路径。~/.zshrc.local 在仓库外，天然不会被提交。
+#
+# 跨机器都成立的东西请直接改仓库里的 zsh/.zshrc。
+
+# ---------- PATH：本机装了什么就加什么 ----------
+# [ -d /opt/postgresql15/bin ] && path=(/opt/postgresql15/bin $path)
+
+# ---------- 主机别名 / SSH 隧道 ----------
+# alias hk-ssh="ssh hk -t tmux attach"
+
+# ---------- 专有项目 ----------
+# alias cdwork='cd ~/work/xxx'
+# cdw() { local d; d=$(fd -t d . ~/work | fzf); [ -n "$d" ] && cd "$d"; }
+
+# ---------- 本机专属环境变量（密钥走 ~/.env，不要放这里）----------
+# export EDITOR=vim
