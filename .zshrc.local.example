@@ -15,5 +15,5 @@
 # alias cdwork='cd ~/work/xxx'
 # cdw() { local d; d=$(fd -t d . ~/work | fzf); [ -n "$d" ] && cd "$d"; }
 
-# ---------- 本机专属环境变量（密钥走 ~/.env，不要放这里）----------
+# ---------- 本机专属环境变量（密钥走 ~/.uzqw.dotfiles.env，不要放这里）----------
 # export EDITOR=vim

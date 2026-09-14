@@ -137,7 +137,7 @@ bindkey '^[[4~' end-of-line
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-# ANTHROPIC_BASE_URL / ANTHROPIC_AUTH_TOKEN 已移至 ~/.env（由 .zshenv 加载，不入库）
+# ANTHROPIC_BASE_URL / ANTHROPIC_AUTH_TOKEN 由 ~/.claude/settings.json 提供，不在这里重复
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export CLAUDE_CODE_ATTRIBUTION_HEADER=0
 
@@ -239,7 +239,7 @@ gofmt() { unset -f gvm go gofmt; load_gvm; "$0" "$@"; }
 # grok
 export PATH="$HOME/.grok/bin:$PATH"
 # <<< Moved from .bashrc <<<
-# AGENTMEMORY 环境变量已移至 ~/.env（由 .zshenv 加载，不提交到仓库）
+# AGENTMEMORY 环境变量走 ~/.uzqw.dotfiles.env（由 .zshenv 加载）
 
 # UTips environment
 [ -f "$HOME/.config/utips/env" ] && . "$HOME/.config/utips/env"
