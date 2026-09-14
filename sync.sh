@@ -60,7 +60,6 @@ fi
 
 echo
 echo "==> 完成"
-echo "提示: 机器本地文件（仓库内 nvim-rafi/.env 除外）："
-echo "      ~/.uzqw.dotfiles.env   密钥/变量，模板 .env.example"
+echo "提示: 机器本地文件（都在 $HOME，仓库工作树里不再放这些）："
+echo "      ~/.uzqw.dotfiles.env   密钥/变量（含 ActivityWatch 地址），模板 .env.example"
 echo "      ~/.zshrc.local         主机别名、专有项目路径，模板 .zshrc.local.example"
-echo "      nvim-rafi/.env         ActivityWatch 地址，留在配置目录里（仓库内，已 gitignore）"

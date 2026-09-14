@@ -4,7 +4,6 @@
 /.stignore
 /.stfolder
 /.stversions
-/.env
 /lua/config/
 /lua/lsp/
 /lua/plugins/

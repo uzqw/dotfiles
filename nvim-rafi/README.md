@@ -29,18 +29,15 @@ cd ~/.config/nvim && make install     # 建目录 + 首次同步插件
 ## ActivityWatch
 
 `bundle/aw-watcher-vim` 已直接收录在仓库中，由 lazy.nvim 加载，不需要单独克隆。
-默认连接 `127.0.0.1:5600`；WSL 或远程服务复制配置模板后修改：
-
-```bash
-cp .env.example .env
-```
+默认连接 `127.0.0.1:5600`；AW 跑在别的机器上时，在这台机器的
+`~/.uzqw.dotfiles.env` 里设两个环境变量（那个文件在仓库外，由 `zsh/.zshenv` 加载）：
 
 ```dotenv
-AW_APIURL_HOST=your-host-ip
-AW_APIURL_PORT=5600
+export AW_APIURL_HOST=your-host-ip
+export AW_APIURL_PORT=5600
 ```
 
-`.env` 是每台机器的本地配置，已被 Git 忽略；`.env.example` 会提交到仓库。
+不在配置目录里放 `.env`：配置目录就是仓库工作树，`git clean -fdx` 会连它一起删掉。
 
 WSL 访问 Windows 上的 ActivityWatch 时，还要修改 Windows 的
 `%LOCALAPPDATA%\\activitywatch\\activitywatch\\aw-server\\aw-server.toml`：

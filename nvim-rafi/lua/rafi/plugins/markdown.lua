@@ -19,11 +19,14 @@ return {
 			},
 			pipe_table = { enabled = true },
 			heading = {
+				-- 墨水屏上灰底很脏，标题/代码块不要底色
+				backgrounds = false,
 				-- Keep the Markdown level visible instead of using circled glyphs.
 				icons = { '# ', '## ', '### ', '#### ', '##### ', '###### ' },
 				position = 'inline',
 				sign = false,
 			},
+			code = { style = 'normal' },
 		},
 		config = function(_, opts)
 			local rm = require('render-markdown')
