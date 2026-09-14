@@ -9,6 +9,12 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ';'
 
+-- Git 默认把非 ASCII 路径转义成 \344\270\255，Neogit / lazygit 里中文文件名
+-- 就是一堆八进制乱码。让 nvim 派生的 git 别转义（也覆盖 nvim 内开的终端）。
+vim.env.GIT_CONFIG_COUNT = '1'
+vim.env.GIT_CONFIG_KEY_0 = 'core.quotepath'
+vim.env.GIT_CONFIG_VALUE_0 = 'false'
+
 -- Enable elite-mode (hjkl mode. arrow-keys resize window)
 vim.g.elite_mode = false
 
@@ -29,17 +35,20 @@ if vim.fn.has('wsl') == 1 then
 	local clip = vim.fn.executable('clip.exe') == 1 and 'clip.exe'
 		or '/mnt/c/Windows/System32/clip.exe'
 	local cache = { {} }
+	-- clip.exe 按 Windows ANSI 代码页解码 stdin，UTF-8 中文直接变乱码，
+	-- 所以先用 iconv 转成 UTF-16LE 再喂给它。
+	local copy = function(lines)
+		cache[1] = lines
+		vim.fn.system(
+			{ 'sh', '-c', 'iconv -f UTF-8 -t UTF-16LE | ' .. vim.fn.shellescape(clip) },
+			table.concat(lines, '\n')
+		)
+	end
 	vim.g.clipboard = {
 		name = 'WslClipboard',
 		copy = {
-			['+'] = function(lines)
-				cache[1] = lines
-				vim.fn.system({ clip }, table.concat(lines, '\n'))
-			end,
-			['*'] = function(lines)
-				cache[1] = lines
-				vim.fn.system({ clip }, table.concat(lines, '\n'))
-			end,
+			['+'] = copy,
+			['*'] = copy,
 		},
 		paste = {
 			['+'] = function() return cache[1] end,
