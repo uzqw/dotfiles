@@ -25,16 +25,15 @@ sync.sh
 
 ```sh
 git clone <repo> ~/dotfiles
-cd ~/dotfiles
-cp .env.example ~/.uzqw.dotfiles.env      # 填密钥
-cp .zshrc.local.example ~/.zshrc.local    # 填本机专属，没有就留空
-./sync.sh
+cd ~/dotfiles && ./sync.sh        # 会把两个机器本地文件从模板生成好
+$EDITOR ~/.uzqw.dotfiles.env      # 填密钥
+$EDITOR ~/.zshrc.local            # 填本机专属，没有就留空
 ```
 
 ## 每机器专属文件
 
 跨机器相同的东西放仓库；只有值不同或涉及密钥的放下面这些文件。仓库里只放它们的
-`.example` 模板。
+`.example` 模板：`sync.sh` 发现目标不存在时自动从模板生成，已存在则绝不触碰。
 
 | 文件 | 放什么 | 模板 | 谁加载 |
 | --- | --- | --- | --- |

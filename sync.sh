@@ -4,8 +4,8 @@
 # 说明:
 #   - 仓库是唯一真源，改仓库里的配置即同步到本机
 #   - 目标已存在且不是符号链接时会拒绝执行，避免静默覆盖本机配置
-#   - ~/.uzqw.dotfiles.env 与 nvim-rafi/.env 为机器专属密钥文件，脚本不会触碰，请自行维护
-#   - 机器专属文件：~/.uzqw.dotfiles.env（密钥）、~/.zshrc.local（别名），仓库里只放模板
+#   - 机器专属文件在 $HOME，仓库外：~/.uzqw.dotfiles.env（密钥）、~/.zshrc.local（别名）
+#     缺了就从仓库的 .example 模板生成，已存在则绝不触碰
 set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
@@ -22,6 +22,20 @@ link() {
   echo "   $dst -> $src"
 }
 
+# 机器本地文件：缺了从模板生成，已存在就不动。$3 = 权限
+seed() {
+  src="$1"
+  dst="$2"
+  if [ -e "$dst" ]; then
+    echo "   已存在，不动: $dst"
+    return
+  fi
+  cp "$src" "$dst"
+  [ -n "$3" ] && chmod "$3" "$dst"
+  echo "   从模板生成: $dst"
+  SEEDED="$SEEDED $dst"
+}
+
 echo "==> 同步 zsh 配置"
 link "$DOTFILES/zsh/.zshrc"  "$HOME/.zshrc"
 link "$DOTFILES/zsh/.zshenv" "$HOME/.zshenv"
@@ -34,10 +48,19 @@ mkdir -p "$HOME/.config"
 link "$DOTFILES/nvim-rafi" "$HOME/.config/nvim-rafi"
 link "$DOTFILES/nvim-rafi" "$HOME/.config/nvim"
 
+echo "==> 机器本地文件（在 $HOME，仓库管不到）"
+seed "$DOTFILES/.env.example"            "$HOME/.uzqw.dotfiles.env" 600
+seed "$DOTFILES/.zshrc.local.example"    "$HOME/.zshrc.local"
+
+if [ -n "$SEEDED" ]; then
+  echo
+  echo "⚠️  刚生成的文件里是占位值，还没生效，记得填："
+  for f in $SEEDED; do echo "      $f"; done
+fi
+
+echo
 echo "==> 完成"
-echo "提示: 机器本地文件都在 $HOME，不在仓库里："
+echo "提示: 机器本地文件（仓库内 nvim-rafi/.env 除外）："
 echo "      ~/.uzqw.dotfiles.env   密钥/变量，模板 .env.example"
 echo "      ~/.zshrc.local         主机别名、专有项目路径，模板 .zshrc.local.example"
-echo "      nvim-rafi/.env         ActivityWatch 地址（这个在配置目录里，仓库内）"
-[ -f "$HOME/.uzqw.dotfiles.env" ] || echo "提示: 缺 ~/.uzqw.dotfiles.env，先 cp .env.example ~/.uzqw.dotfiles.env 并填值"
-[ -f "$HOME/.zshrc.local" ] || echo "提示: 缺 ~/.zshrc.local，可 cp .zshrc.local.example ~/.zshrc.local"
+echo "      nvim-rafi/.env         ActivityWatch 地址，留在配置目录里（仓库内，已 gitignore）"
