@@ -20,7 +20,7 @@ return {
 			pipe_table = { enabled = true },
 			heading = {
 				-- 墨水屏上灰底很脏，标题/代码块不要底色
-				backgrounds = false,
+				backgrounds = {}, -- 空列表=不画底色；写 false 会生成 { fg, false } 触发 nvim 0.12.5 的 Invalid 'hl_group'
 				-- Keep the Markdown level visible instead of using circled glyphs.
 				icons = { '# ', '## ', '### ', '#### ', '##### ', '###### ' },
 				position = 'inline',
